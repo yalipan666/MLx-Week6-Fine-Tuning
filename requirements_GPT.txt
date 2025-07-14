@@ -1,0 +1,13 @@
+transformers==4.27.2
+peft==0.3.0
+datasets==2.11.0
+evaluate==0.4.0
+rouge_score==0.1.2
+torch==1.13.1
+torchdata==0.5.1
+trl @ git+https://github.com/lvwerra/trl.git@25fa1bd
+huggingface_hub
+openai
+tqdm
+pandas
+numpy 
