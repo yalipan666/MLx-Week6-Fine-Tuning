@@ -18,7 +18,7 @@ Preparing a preference dataset for DPO
 ### ---  Loading a preference dataset ---- ###
 import json
 import os
-import urllib
+import urllib.request
 
 
 def download_and_load_file(file_path, url):
@@ -206,6 +206,7 @@ from torch.utils.data import DataLoader
 
 tokenizer = tiktoken.get_encoding("gpt2")
 
+example_data = data[:2]  # or any small number of entries
 example_dataset = PreferenceDataset(example_data, tokenizer)
 
 example_dataloader = DataLoader(
