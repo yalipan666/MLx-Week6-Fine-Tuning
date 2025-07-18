@@ -294,6 +294,8 @@ from previous_chapters import (
     token_ids_to_text
 )
 
+input_text = format_input(val_data[0])
+
 token_ids = generate(
     model=model,
     idx=text_to_token_ids(input_text, tokenizer),
@@ -421,32 +423,6 @@ def check_if_running(process_name):
     return running
 
 ollama_running = check_if_running("ollama")
-
-if not ollama_running:
-    raise RuntimeError("Ollama not running. Launch ollama before proceeding.")
-print("Ollama running:", check_if_running("ollama"))
-
-# This cell is optional; it allows you to restart the notebook
-# and only run section 7.7 without rerunning any of the previous code
-import json
-from tqdm import tqdm
-
-file_path = "instruction-data-with-response.json"
-
-with open(file_path, "r") as file:
-    test_data = json.load(file)
-
-
-def format_input(entry):
-    instruction_text = (
-        f"Below is an instruction that describes a task. "
-        f"Write a response that appropriately completes the request."
-        f"\n\n### Instruction:\n{entry['instruction']}"
-    )
-
-    input_text = f"\n\n### Input:\n{entry['input']}" if entry["input"] else ""
-
-    return instruction_text + input_text
 
 import urllib.request
 
