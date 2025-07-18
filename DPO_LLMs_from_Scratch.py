@@ -330,34 +330,10 @@ from previous_chapters import (
     text_to_token_ids,
     token_ids_to_text
 )
-# Alternatively:
-# from llms_from_scratch.ch05 (
-#     generate,
-#     text_to_token_ids,
-#     token_ids_to_text
-# )
-
 torch.manual_seed(123)
-
-token_ids = generate(
-    model=model,
-    idx=text_to_token_ids(prompt, tokenizer),
-    max_new_tokens=35,
-    context_size=BASE_CONFIG["context_length"],
-    eos_id=50256
-)
-
-response = token_ids_to_text(token_ids, tokenizer)
-print(response)
-
-
 
 def extract_response(response_text, input_text):
     return response_text[len(input_text):].replace("### Response:", "").strip()
-
-response = extract_response(response, prompt)
-print(response)
-
 
 policy_model = model
 
@@ -517,6 +493,7 @@ def compute_dpo_loss_batch(batch, policy_model, reference_model, beta):
 
 
 with torch.no_grad():
+    batch = next(iter(train_loader))
     loss = compute_dpo_loss_batch(batch, policy_model, reference_model, beta=0.1)
 print(loss)
 
@@ -744,6 +721,49 @@ tracking = train_model_dpo_simple(
 end_time = time.time()
 execution_time_minutes = (end_time - start_time) / 60
 print(f"Training completed in {execution_time_minutes:.2f} minutes.")
+
+
+
+
+
+
+
+
+
+# Example: Generate a response from the fine-tuned model
+
+# 1. Prepare your prompt (you can use format_input or just a plain string)
+user_instruction = "Summarize the following text in one sentence."
+user_input = "The quick brown fox jumps over the lazy dog."
+prompt = (
+    "Below is an instruction that describes a task. Write a response that appropriately completes the request."
+    f"\n\n### Instruction:\n{user_instruction}"
+    f"\n\n### Input:\n{user_input}"
+)
+
+# 2. Tokenize the prompt
+input_ids = text_to_token_ids(prompt, tokenizer).to(device)
+
+# 3. Generate a response
+with torch.no_grad():
+    output_token_ids = generate(
+        model=model,
+        idx=input_ids,
+        max_new_tokens=64,  # You can adjust this
+        context_size=BASE_CONFIG["context_length"],
+        eos_id=50256,
+    )
+
+# 4. Decode the output
+output_text = token_ids_to_text(output_token_ids, tokenizer)
+
+# 5. Extract only the response part (optional, if your format includes "### Response:")
+if "### Response:" in output_text:
+    response = output_text.split("### Response:")[-1].strip()
+else:
+    response = output_text[len(prompt):].strip()
+
+print("Model response:\n", response)
 
 
 
